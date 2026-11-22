@@ -24,8 +24,8 @@ jobs:
       - name: Configure (CMake)
         run: cmake -S . -B build -A x64 -DJUCE_PATH=${{ github.workspace }}/JUCE
 
-      - name: Build VST3
-        run: cmake --build build --config Release --target MagicalChords_VST3 --parallel
+      - name: Build VST3 + Standalone
+        run: cmake --build build --config Release --target MagicalChords_VST3 MagicalChords_Standalone --parallel
 
       - name: Upload VST3 plugin
         uses: actions/upload-artifact@v4
@@ -33,4 +33,12 @@ jobs:
           name: Magical-Chords-Windows-VST3
           path: build/MagicalChords_artefacts/Release/VST3/
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Standalone app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Magical-Chords-Windows-Standalone
+          path: build/MagicalChords_artefacts/Release/Standalone/
+          if-no-files-found: warn
           retention-days: 14
