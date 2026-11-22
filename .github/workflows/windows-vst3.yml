@@ -1,0 +1,36 @@
+name: Windows VST3 Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-vst3:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+
+      - name: Checkout JUCE
+        uses: actions/checkout@v4
+        with:
+          repository: juce-framework/JUCE
+          ref: 7.0.12
+          path: JUCE
+
+      - name: Configure (CMake)
+        run: cmake -S . -B build -A x64 -DJUCE_PATH=${{ github.workspace }}/JUCE
+
+      - name: Build VST3
+        run: cmake --build build --config Release --target MagicalChords_VST3 --parallel
+
+      - name: Upload VST3 plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: Magical-Chords-Windows-VST3
+          path: build/MagicalChords_artefacts/Release/VST3/
+          if-no-files-found: error
+          retention-days: 14
