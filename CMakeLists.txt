@@ -5,14 +5,15 @@ project(MagicalChords
     DESCRIPTION "Magical Chords - AI vocal-driven chord / MIDI generator VST3"
     LANGUAGES C CXX)
 
+# C++17 is required (std::clamp, structured bindings are used by the analysis
+# core). Set globally AND on the target so MSVC (default C++14) uses C++17 too.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # -----------------------------------------------------------------------------
 # JUCE
 # -----------------------------------------------------------------------------
-# Point JUCE_PATH at a local JUCE checkout (>= 7.0.0), e.g.:
-#   cmake -B build -DJUCE_PATH=/path/to/JUCE
-#
-# Or drop the JUCE sources under a subfolder named "JUCE" next to this file
-# and the fallback below will pick it up automatically.
 if(NOT DEFINED JUCE_PATH AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/JUCE/CMakeLists.txt")
     set(JUCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/JUCE")
 endif()
@@ -40,6 +41,8 @@ juce_add_plugin(MagicalChords
     IS_MIDI_EFFECT           FALSE
     COPY_PLUGIN_AFTER_BUILD  TRUE
     VST3_CATEGORIES          Instrument Effect)
+
+target_compile_features(MagicalChords PRIVATE cxx_std_17)
 
 target_sources(MagicalChords PRIVATE
     Source/PluginProcessor.cpp
